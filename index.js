@@ -1,9 +1,11 @@
+'use strict';
+
 const store = {
   items: [
-    { id: cuid(), name: 'apples', checked: false },
-    { id: cuid(), name: 'oranges', checked: false },
-    { id: cuid(), name: 'milk', checked: true },
-    { id: cuid(), name: 'bread', checked: false }
+    { id: cuid(), name: 'apples', checked: false, formId: cuid() },
+    { id: cuid(), name: 'oranges', checked: false, formId: cuid() },
+    { id: cuid(), name: 'milk', checked: true, formId: cuid() },
+    { id: cuid(), name: 'bread', checked: false, formId: cuid() }
   ],
   hideCheckedItems: false
 };
@@ -26,6 +28,10 @@ const generateItemElement = function (item) {
         <button class='shopping-item-delete js-item-delete'>
           <span class='button-label'>delete</span>
         </button>
+        <form id='${item.formId}' class='js-change-name' data-item-id='${item.id}'>
+          <input type='text' name='change-name-entry' class='js-change-name-entry' placeholder='new name' data-item-id='${item.id}'>
+          <button class='js-change-name-entry' type='submit'>Change Name</button>
+        </form>
       </div>
     </li>`;
 };
@@ -145,6 +151,27 @@ const handleToggleFilterClick = function () {
   });
 };
 
+const getItemIdFromForm = function (item) {
+  return $(item)
+    .closest('.js-change-name')
+    .data('item-id');
+};
+const nameChange = function (id, newName) {
+  const foundItem = store.items.find(item => item.id === id);
+  foundItem.name = newName;
+};
+
+const handleNameChange = function () {
+  $('.js-shopping-list').on('submit', '', function(event){
+    event.preventDefault();
+    const id = getItemIdFromForm(event.Target);
+    console.log(id);
+    const newName = $('.js-name-change-entry').val();
+    $('.js-shopping-list-entry').val('');
+    nameChange(id, newName);
+    render();
+  });
+};
 /**
  * This function will be our callback when the
  * page loads. It is responsible for initially 
@@ -160,7 +187,22 @@ const handleShoppingList = function () {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleFilterClick();
+  handleNameChange();
 };
 
 // when the page loads, call `handleShoppingList`
 $(handleShoppingList);
+
+
+
+/**********New Code for Shopping List**********/
+
+//create a generate function that will change the store.items[i].name
+//
+//create a handle function that will be an event listener to change the store, and run the render function
+//
+//update the render function so that it will read the properties in the store and output the html
+//
+//add new elements to the index.html (YES ON THIS PAGE)
+
+
